@@ -4,15 +4,15 @@
 typedef struct connection{ //moj pomysl na strukture grafu jest taki, zeby tworzyc tablice polaczen w grafie
     int start;//wierzcolek z ktorego wychodzi krawedz
     int end;//wierzcholek w ktorym konczy sie krawedz
-    //ewentualnie mozemy dodac pole "is connection" i wtedy tworzyc tablice dwuwymiarowa gdzie beda wszystkie mozliwe polaczenia z A do B i to pole oznaczalo by czy jest polaczenie czy go nie ma 
+    int is_connection;//ewentualnie mozemy dodac pole "is connection" i wtedy tworzyc tablice dwuwymiarowa gdzie beda wszystkie mozliwe polaczenia z A do B i to pole oznaczalo by czy jest polaczenie czy go nie ma 
 }connection;
 
-connection* generate_graph_randomly(int nodes){
-    connection* graph_structure = malloc(sizeof(connection)*nodes*nodes); //tablica polaczen reprezentujaca strukture grafu
+connection** generate_graph_randomly(int nodes){
+    connection** graph_structure = malloc(sizeof(connection)*nodes); //tablica polaczen reprezentujaca strukture grafu
     //Losowe generowanie grafu
     return graph_structure;
 }
-connection*  generate_graph_via_chat(){
+connection**  generate_graph_via_chat(){
     //Tu nie mam pojecia co powinno sie zadziac
 }
 
