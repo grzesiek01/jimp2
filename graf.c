@@ -1,23 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-typedef struct connection{ //moj pomysl na strukture grafu jest taki, zeby tworzyc tablice polaczen w grafie
-    int start;//wierzcolek z ktorego wychodzi krawedz
-    int end;//wierzcholek w ktorym konczy sie krawedz
-    int is_connection;//ewentualnie mozemy dodac pole "is connection" i wtedy tworzyc tablice dwuwymiarowa gdzie beda wszystkie mozliwe polaczenia z A do B i to pole oznaczalo by czy jest polaczenie czy go nie ma 
-}connection;
-
-connection** generate_graph_randomly(int nodes){
-    connection** graph_structure = malloc(sizeof(connection)*nodes); //tablica polaczen reprezentujaca strukture grafu
+bool** generate_graph_randomly(int nodes){
+    bool** graph_structure = malloc(sizeof(bool)*nodes); //tablica polaczen reprezentujaca strukture grafu
     //Losowe generowanie grafu
     return graph_structure;
 }
-connection**  generate_graph_via_chat(){
+bool**  generate_graph_via_chat(){
     //Tu nie mam pojecia co powinno sie zadziac
 }
 
 
 int main(int argc, char** argv){
+    bool **connections;
     int input1;//zmienna odpowiadajaca za wybor komunikacji urzytkownika z komputerem
     printf("How would you like to tell, how to generate graph?\n1. Tell how many nodes should be in graph\n2. Tell chat to generate graph");
     gets(input1);
