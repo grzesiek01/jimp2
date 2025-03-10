@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
+#include <stdbool.h>
+#include "graph.h"
 
 #pragma comment(lib, "wininet.lib")
 
@@ -42,7 +44,7 @@ void buildJsonPayload(char* postData, size_t size, const char* lastQuestion) {
     snprintf(postData, size, "{\n    \"model\": \"phi4:latest\",\n    \"messages\": [\n");
 
     // Podsumowanie historii rozmowy
-    strncat(postData, "        {\"role\": \"system\", \"content\": \"Answer as short as you can. If asked to create a graph, provide the graph's connections in the following format: \\\"vertex_from - vertex_to\\\". Multiple connections allowed from single vertex. Mix connections. They don't have to be ascending. The user may ask for graphs with any number of vertices. Connections do not have to form cycle\\nContext of the conversation:\\n", size - strlen(postData) - 1);
+    strncat(postData, "        {\"role\": \"system\", \"content\": \"Answer as short as you can. If asked to create a graph, provide the random graph's connections in the following format: \\\"vertex_from - vertex_to\\\". Number vertices from 0. Multiple connections allowed from single vertex. At least one connection to each vertex. Mix connections. They don't have to be ascending. The user may ask for graphs with any number of vertices. Connections do not have to form cycle.\\nContext of the conversation:\\n", size - strlen(postData) - 1);
 
     // Dodajemy historię rozmowy jako tekst w "system"
     for (int i = 0; i < historyCount; i++) {
@@ -65,7 +67,7 @@ void buildJsonPayload(char* postData, size_t size, const char* lastQuestion) {
 
 
 // Funkcja do wysyłania żądania HTTP POST z danymi JSON
-void SendHttpPostRequest(const char* url, const char* postData) {
+char *SendHttpPostRequest(const char *host, int port, const char* postData) {
     HINTERNET hInternet, hConnect;
     HINTERNET hRequest;
     DWORD bytesRead;
@@ -75,58 +77,54 @@ void SendHttpPostRequest(const char* url, const char* postData) {
     // Inicjalizowanie WinINet
     hInternet = InternetOpenA("HTTP Client", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     if (hInternet == NULL) {
-        printf("Blad podczas otwierania polaczenia z Internetem: %ld\n", GetLastError());
-        return;
+        printf("Błąd podczas otwierania połączenia z Internetem: %ld\n", GetLastError());
+        EXIT_FAILURE;
     }
 
-    DWORD timeout = 120000;  // Czas oczekiwania ustawiony na 2 min
+    DWORD timeout = 240000;  // Czas oczekiwania ustawiony na 4 min
     InternetSetOptionA(hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout));
     InternetSetOptionA(hInternet, INTERNET_OPTION_SEND_TIMEOUT, &timeout, sizeof(timeout));
     InternetSetOptionA(hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(timeout));
 
-
-    
-    // Wyodrębnienie hosta i port z adresu URL
-    const char* host = "localhost";
-    const int port = 1234;
-
     // Tworzenie połączenia z serwerem
     hConnect = InternetConnectA(hInternet, host, port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
     if (hConnect == NULL) {
-        printf("Blad podczas laczenia sie z serwerem: %ld\n", GetLastError());
+        printf("Błąd podczas łączenia sie z serwerem: %ld\n", GetLastError());
         InternetCloseHandle(hInternet);
-        return;
+        EXIT_FAILURE;
     }
 
     // Tworzenie żądania HTTP POST na URL /v1/chat/completions
     hRequest = HttpOpenRequestA(hConnect, "POST", "/v1/chat/completions", NULL, NULL, NULL, INTERNET_FLAG_RELOAD, 0);
     if (hRequest == NULL) {
-        printf("Blad podczas otwierania zadania POST: %ld\n", GetLastError());
+        printf("Błąd podczas otwierania zadania POST: %ld\n", GetLastError());
         InternetCloseHandle(hConnect);
         InternetCloseHandle(hInternet);
-        return;
+        EXIT_FAILURE;
     }
 
     // Dodanie nagłówków
     const char* headers = "Content-Type: application/json\r\n";
     bResult = HttpAddRequestHeadersA(hRequest, headers, -1, HTTP_ADDREQ_FLAG_ADD);
     if (!bResult) {
-        printf("Blad podczas dodawania naglowkow: %ld\n", GetLastError());
+        printf("Błąd podczas dodawania nagłówków: %ld\n", GetLastError());
         InternetCloseHandle(hRequest);
         InternetCloseHandle(hConnect);
         InternetCloseHandle(hInternet);
-        return;
+        EXIT_FAILURE;
     }
 
     // Wysłanie żądania HTTP POST z danymi JSON
     bResult = HttpSendRequestA(hRequest, NULL, 0, (LPVOID)postData, strlen(postData));
     if (!bResult) {
-        printf("Blad podczas wysylania zadania: %ld\n", GetLastError());
+        printf("Blad podczas wysyłania zadania: %ld\n", GetLastError());
         InternetCloseHandle(hRequest);
         InternetCloseHandle(hConnect);
         InternetCloseHandle(hInternet);
-        return;
+        EXIT_FAILURE;
     }
+
+    char *response;
 
     // Odczyt odpowiedzi z serwera
     while (1) {
@@ -135,18 +133,19 @@ void SendHttpPostRequest(const char* url, const char* postData) {
             break;
         }
         buffer[bytesRead] = '\0';  // Null-terminate the buffer
-        char *response = strstr(buffer, "\"content\":");
-        response += 11;
-        char *response_end = strchr(response, '}');
+        response = strstr(buffer, "\"content\":");
+        response += 12;
+        char *response_end = strchr(response, '\"');
         *response_end = '\0';
         replaceNewlines(response);
-        printf("Odpowiedz: %s\n", response);
     }
 
     // Czyszczenie
     InternetCloseHandle(hRequest);
     InternetCloseHandle(hConnect);
     InternetCloseHandle(hInternet);
+
+    return response;
 }
 
 

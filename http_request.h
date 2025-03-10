@@ -9,7 +9,7 @@
 void replaceNewlines(char* response);
 void addToHistory(const char* content);
 void buildJsonPayload(char* postData, size_t size, const char* lastQuestion);
-void SendHttpPostRequest(const char* url, const char* postData);
+char *SendHttpPostRequest(const char *host, int port, const char* postData);
 
 
 #endif
