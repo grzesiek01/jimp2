@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "locale.h": "c",
+        "http_request.h": "c",
+        "string.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c"
+    }
+}
