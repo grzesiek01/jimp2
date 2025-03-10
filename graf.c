@@ -59,6 +59,7 @@ void write_graph(bool** graph, int nodes){
     }
 }
 
+
 bool**  generate_graph_via_chat(){
     //Tu nie mam pojecia co powinno sie zadziac
 }
