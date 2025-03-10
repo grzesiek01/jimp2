@@ -44,7 +44,7 @@ void buildJsonPayload(char* postData, size_t size, const char* lastQuestion) {
     snprintf(postData, size, "{\n    \"model\": \"phi4:latest\",\n    \"messages\": [\n");
 
     // Podsumowanie historii rozmowy
-    strncat(postData, "        {\"role\": \"system\", \"content\": \"Answer as short as you can. If asked to create a graph, provide the random graph's connections in the following format: \\\"vertex_from - vertex_to\\\". Number vertices from 0. Multiple connections allowed from single vertex. At least one connection to each vertex. Mix connections. They don't have to be ascending. The user may ask for graphs with any number of vertices. Connections do not have to form cycle.\\nContext of the conversation:\\n", size - strlen(postData) - 1);
+    strncat(postData, "        {\"role\": \"system\", \"content\": \"Answer as short as you can. If asked to create a graph, provide the random graph's connections in the following format: \\\"vertex_from - vertex_to\\\". Number vertices from 0. Make many connections. Multiple connections allowed from single vertex. At least one connection to each vertex. Mix connections. They don't have to be ascending. The user may ask for graphs with any number of vertices. Connections do not have to form cycle.\\nContext of the conversation:\\n", size - strlen(postData) - 1);
 
     // Dodajemy historię rozmowy jako tekst w "system"
     for (int i = 0; i < historyCount; i++) {
