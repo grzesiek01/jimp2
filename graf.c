@@ -1,21 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 
-typedef struct connection{ //moj pomysl na strukture grafu jest taki, zeby tworzyc tablice polaczen w grafie
-    int start;//wierzcolek z ktorego wychodzi krawedz
-    int end;//wierzcholek w ktorym konczy sie krawedz
-    int is_connection;//ewentualnie mozemy dodac pole "is connection" i wtedy tworzyc tablice dwuwymiarowa gdzie beda wszystkie mozliwe polaczenia z A do B i to pole oznaczalo by czy jest polaczenie czy go nie ma 
-}connection;
-
-connection** generate_directed_graph_randomly(int nodes){ //Losowe generowanie grafu skierowanego
-    connection** graph_structure = malloc(sizeof(connection)*nodes); //tablica polaczen reprezentujaca strukture grafu
+bool** generate_directed_graph_randomly(int nodes){ //Losowe generowanie grafu skierowanego
+    bool** graph_structure = malloc(sizeof(bool*)*nodes); //tablica polaczen reprezentujaca strukture grafu
     for(int i = 0; i < nodes; i++){//pusty graf
-        graph_structure[i] = malloc(sizeof(connection)*nodes);
+        graph_structure[i] = malloc(sizeof(bool)*nodes);
         for(int j = 0; j < nodes; j++){
-            graph_structure[i][j].start = i;
-            graph_structure[i][j].end = j;
-            graph_structure[i][j].is_connection = 0;
+            graph_structure[i][j] = 0;
         }
     }
     srand(time(NULL));
@@ -23,21 +16,19 @@ connection** generate_directed_graph_randomly(int nodes){ //Losowe generowanie g
     for(int i = 0; i < edges; i++){
         int edge_start = rand() % nodes;
         int edge_end = rand() % nodes;
-        if(edge_start != edge_end && graph_structure[edge_start][edge_end].is_connection != 1){
-            graph_structure[edge_start][edge_end].is_connection = 1;
+        if(edge_start != edge_end && graph_structure[edge_start][edge_end] != 1){
+            graph_structure[edge_start][edge_end] = 1;
         }
     }
     return graph_structure;
 }
 
-connection** generate_undirected_graph_randomly(int nodes){
-    connection** graph_structure = malloc(sizeof(connection)*nodes); //tablica polaczen reprezentujaca strukture grafu
+bool** generate_undirected_graph_randomly(int nodes){
+    bool** graph_structure = malloc(sizeof(bool*)*nodes); //tablica polaczen reprezentujaca strukture grafu
     for(int i = 0; i < nodes; i++){//pusty graf
-        graph_structure[i] = malloc(sizeof(connection)*nodes);
+        graph_structure[i] = malloc(sizeof(bool)*nodes);
         for(int j = 0; j < nodes; j++){
-            graph_structure[i][j].start = i;
-            graph_structure[i][j].end = j;
-            graph_structure[i][j].is_connection = 0;
+            graph_structure[i][j] = 0;
         }
     }
     srand(time(NULL));
@@ -51,24 +42,24 @@ connection** generate_undirected_graph_randomly(int nodes){
     for(int i = 0; i < edges; i++){
         int edge_start = rand() % nodes;
         int edge_end = rand() % nodes;
-        if(edge_start != edge_end && graph_structure[edge_start][edge_end].is_connection != 1 && graph_structure[edge_end][edge_start].is_connection != 1){
-            graph_structure[edge_start][edge_end].is_connection = 1;
-            graph_structure[edge_end][edge_start].is_connection = 1;
+        if(edge_start != edge_end && graph_structure[edge_start][edge_end] != 1 && graph_structure[edge_end][edge_start] != 1){
+            graph_structure[edge_start][edge_end] = 1;
+            graph_structure[edge_end][edge_start] = 1;
         }
     }
     return graph_structure;
 }
 
-void write_graph(connection** graph, int nodes){
+void write_graph(bool** graph, int nodes){
     for(int i = 0; i < nodes; i++){
         for(int j = 0; j < nodes; j++){
-            printf("[%d]",graph[i][j].is_connection);
+            printf("[%d]",graph[i][j]);
         }
         printf("\n");
     }
 }
 
-connection**  generate_graph_via_chat(){
+bool**  generate_graph_via_chat(){
     //Tu nie mam pojecia co powinno sie zadziac
 }
 
@@ -81,7 +72,7 @@ int main(int argc, char** argv){
     char input3;//zmienna odpowiadajaca za wybor czy graf ma byc skierowany czy nie
     int flag3 = 0;//flaga, ktora zmieniamy dopiero wtedy gdy uzytkownik poda dobry input3
     int nodes;//zmienna przechowujaca ilosc wierzcholkow
-    connection** graph;
+    bool** graph;
     while(flag1 == 0){
         printf("How would you like to tell, how to generate graph?\n1. Tell how many nodes should be in graph\n2. Tell chat to generate graph\n");
         scanf(" %c",&input1);
