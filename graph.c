@@ -81,6 +81,7 @@ bool** generate_directed_graph_randomly(int nodes){ //Losowe generowanie grafu s
         }
     }
     srand(time(NULL));
+
     int edges = (rand() % ((nodes*(nodes-1))/2)) + ((nodes*(nodes-1))/2);//zmienna oznaczjaca ilosc potencjalnych krawedzi w grafie
     for(int i = 0; i < edges; i++){
         int edge_start = rand() % nodes;
@@ -118,6 +119,7 @@ bool** generate_undirected_graph_randomly(int nodes){
             graph_structure[edge_start][edge_end] = 1;
             graph_structure[edge_end][edge_start] = 1;
         }
+
         else{
             i--;
         }

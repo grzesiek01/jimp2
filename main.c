@@ -58,6 +58,8 @@ int main(int argc, char** argv){
             int port;
             int choice;
             bool isDirected;
+            char ai_model[50];
+
 
             while(1) {
                 printf("Podaj gdzie postawiony jest model ai:\n[1] LM Studio\n[2] Ollama\n> ");
@@ -82,6 +84,10 @@ int main(int argc, char** argv){
                 }
             }
 
+            printf("Podaj model AI, z którego korzystasz: ");
+            scanf("%49s", ai_model);
+            getchar();
+
             printf("Zadaj pytanie:\n");
 
             // Pobieranie pytania od użytkownika
@@ -97,7 +103,8 @@ int main(int argc, char** argv){
             addToHistory(userQuestion);
             
             // Zbuduj JSON-a uwzględniającego całą historię rozmowy
-            buildJsonPayload(postData, sizeof(postData), userQuestion);
+            buildJsonPayload(postData, sizeof(postData), userQuestion, ai_model);
+
             printf("Wysyłanie żądania HTTP POST z danymi JSON...\n\n");
             char *response = SendHttpPostRequest(host, port, postData);
             nodes = nodes_count(response);

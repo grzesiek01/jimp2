@@ -8,7 +8,7 @@
 
 void replaceNewlines(char* response);
 void addToHistory(const char* content);
-void buildJsonPayload(char* postData, size_t size, const char* lastQuestion);
+void buildJsonPayload(char* postData, size_t size, const char* lastQuestion, char *ai_model);
 char *SendHttpPostRequest(const char *host, int port, const char* postData);
 
 
