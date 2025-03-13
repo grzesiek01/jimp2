@@ -142,7 +142,6 @@ bool** generate_graph_from_user(int nodes, bool is_directed){
         printf("Podaj krawędź w formacie 'nr_wierzchołka_startowego-nr_wierzchołka_końcowego' np. 1-3. Aby zakończyć wpisz 'exit'\n");
         scanf(" %s", &response);
         sscanf(response, " %d-%d", &from, &to);
-        printf("%d,%d\n",from,to);
         if (from >= 0 && from < nodes && to >= 0 && to < nodes && from != to) {
             graph[from][to] = true;
             if(is_directed != 1) {
