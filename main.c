@@ -19,7 +19,7 @@ int main(int argc, char** argv){
 
 
     while(flag1 == 0){
-        printf("W jaki sposób graf ma zostać wygenerowany?\n[1] Graf wygenerowany losowo przez program\n[2] Graf wygenerowany przez model AI\n");
+        printf("W jaki sposób graf ma zostać wygenerowany?\n[1] Graf wygenerowany losowo przez program\n[2] Graf wygenerowany przez model AI\n[3] Graf generowany poprzez podanie krawedzi\n");
         scanf(" %c",&input1);
         if(input1 == '1'){
             while(flag2 == 0){
@@ -59,6 +59,7 @@ int main(int argc, char** argv){
             int choice;
             bool isDirected;
             char ai_model[50];
+
 
             while(1) {
                 printf("Podaj gdzie postawiony jest model ai:\n[1] LM Studio\n[2] Ollama\n> ");
@@ -103,6 +104,7 @@ int main(int argc, char** argv){
             
             // Zbuduj JSON-a uwzględniającego całą historię rozmowy
             buildJsonPayload(postData, sizeof(postData), userQuestion, ai_model);
+
             printf("Wysyłanie żądania HTTP POST z danymi JSON...\n\n");
             char *response = SendHttpPostRequest(host, port, postData);
             nodes = nodes_count(response);
@@ -126,12 +128,46 @@ int main(int argc, char** argv){
                 printf("Błąd! Zbyt mało wierzchołków, aby stworzyć graf!\n");
                 return 1;
             }
-        }else{
+        }
+        else if(input1 == '3'){
+            while(flag2 == 0){
+                printf("Ile wierzchołków ma zawierać graf?\n");
+                scanf("%s",&input2);
+                if(atoi(input2)>1){
+                    nodes = atoi(input2);
+                    flag2 = 1;
+                }
+                else{
+                    printf("Wprowadź poprawną liczbę wierzchołków!\n");
+                }
+            }
+            bool is_directed;
+            while(flag3 == 0){
+                printf("Czy graf ma być skierowany?\n[1] Tak\n[2] Nie\n> ");
+                scanf(" %c",&input3);
+                if(input3 == '1'){
+                    is_directed = 1;
+                    flag1 = 1;
+                    flag3 = 1;
+                }
+                else if(input3 == '2'){
+                    is_directed = 0;
+                    flag1 = 1;
+                    flag3 = 1;
+                }
+                else{
+                    printf("Niepoprawna odpowiedź! Wybierz [1] lub [2]\n");
+                }
+            }  
+            graph = generate_graph_from_user(nodes,is_directed);           
+        }
+        else{
             printf("Niepoprawna odpowiedź! Wybierz [1] lub [2]\n");
         }
     }
     printf("Graf:\n");
     print_graph(graph, nodes);
+    print_graph_to_file(graph,nodes);
     free_graph(graph, nodes);
     return 0;
 }
